@@ -1,0 +1,42 @@
+import logging
+import sys
+from datetime import datetime
+import pytz
+from app.core.settings import settings
+
+
+class TZFormatter(logging.Formatter):
+    """Custom formatter to include timezone-aware timestamps with milliseconds."""
+    def __init__(self, fmt=None, datefmt=None, tz_name="Asia/Ho_Chi_Minh"):
+        super().__init__(fmt, datefmt)
+        self.tz = pytz.timezone(tz_name)
+
+    def formatTime(self, record, datefmt=None):
+        dt = datetime.fromtimestamp(record.created, self.tz)
+        if datefmt:
+            s = dt.strftime(datefmt)
+            return f"{s}.{int(record.msecs):03d}"
+        return dt.isoformat(timespec="milliseconds")
+
+
+def setup_logging():
+    log_level = getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO)
+
+    formatter = TZFormatter(
+        fmt="[%(asctime)s] [%(levelname)s] [%(name)s] - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        tz_name=getattr(settings, "TIMEZONE", "Asia/Ho_Chi_Minh"),
+    )
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(formatter)
+
+    root_logger = logging.getLogger()
+    root_logger.setLevel(log_level)
+    root_logger.addHandler(handler)
+
+    logging.getLogger("uvicorn").setLevel(logging.WARNING)
+    logging.getLogger("uvicorn.error").setLevel(logging.ERROR)
+    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+
+    root_logger.info("Logging settingsured successfully.")
