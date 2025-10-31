@@ -1,7 +1,8 @@
-onnxruntime-gpu --index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-11/pypi/simple/
+onnxruntime-gpu==1.23.2
 sherpa-onnx==1.12.13+cuda12.cudnn9 -f https://k2-fsa.github.io/sherpa/onnx/cuda.html
-fastapi
+fastapi==0.120.3
 uvicorn[standard]
 gunicorn
-pydub
 python-multipart
+huggingface-hub==1.0.1
+scipy==1.16.3

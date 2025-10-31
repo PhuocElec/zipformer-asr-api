@@ -1,10 +1,12 @@
 import os
 import sherpa_onnx
 import logging
+import numpy as np
 from typing import Optional
 
 from app.core.settings import settings
 from app.models.downloader import download_hf_model
+from app.utils.audio import resample_audio
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +27,7 @@ class Zipformer:
         decoder: str,
         joiner: str,
         tokens: str,
+        desired_sr: int = 16000,
         num_threads: int = 2,
         device: str = "cuda",
     ):
@@ -36,7 +39,7 @@ class Zipformer:
             revision=revision,
             token=settings.HF_TOKEN,
         )
-    
+
         encoder_path = os.path.join(model_dir, encoder)
         decoder_path = os.path.join(model_dir, decoder)
         joiner_path  = os.path.join(model_dir, joiner)
@@ -54,17 +57,25 @@ class Zipformer:
             tokens=tokens_path,
             num_threads=num_threads,
             decoding_method="greedy_search",
-            sample_rate=16000,
+            sample_rate=desired_sr,
             feature_dim=80,
             debug=False,
             provider=device,
         )
 
+        self.desired_sr = desired_sr
         self._initialized = True
 
-    def prepare_model(self):
-        """Download and prepare the Zipformer model files."""
-        pass  # Implementation for downloading and preparing model files goes here
+    def transcribe(self, samples: np.ndarray, sample_rate: int) -> str:
+        if sample_rate != self.desired_sr:
+            samples = resample_audio(samples, sample_rate, self.desired_sr)
+
+        stream = self.recognizer.create_stream()
+        stream.accept_waveform(self.desired_sr, samples)
+        self.recognizer.decode_stream(stream)
+        result_text = stream.result.text
+
+        return result_text
 
 zipformer = Zipformer(
     repo_id=settings.ZIPFORMER_REPO_ID,
