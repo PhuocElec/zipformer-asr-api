@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     ZIPFORMER_DECODER: str = "decoder.onnx"
     ZIPFORMER_JOINER: str = "joiner.onnx"
     ZIPFORMER_TOKENS: str = "tokens.txt"
+    ZIPFORMER_NUM_THREADS: int = 2
 
     model_config = SettingsConfigDict(
         env_file=".env",
