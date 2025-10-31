@@ -45,11 +45,6 @@ class Zipformer:
         joiner_path  = os.path.join(model_dir, joiner)
         tokens_path  = os.path.join(model_dir, tokens)
 
-        print("Encoder path: %s", encoder_path)
-        print("Decoder path: %s", decoder_path)
-        print("Joiner path: %s", joiner_path)
-        print("Tokens path: %s", tokens_path)
-
         self.recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(
             encoder=encoder_path,
             decoder=decoder_path,

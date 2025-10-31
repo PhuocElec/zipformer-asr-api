@@ -2,8 +2,9 @@ import logging
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
-from core.logging import setup_logging
-from core.settings import settings
+from app.core.logging import setup_logging
+from app.core.settings import settings
+from app.api import transcriptions
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -20,6 +21,8 @@ app = FastAPI(
     title=settings.APP_NAME,
     lifespan=lifespan,
 )
+
+app.include_router(transcriptions.router)
 
 logger.info(f"FastAPI app '{settings.APP_NAME}' initialized and routes registered")
 

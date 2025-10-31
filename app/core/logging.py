@@ -35,8 +35,8 @@ def setup_logging():
     root_logger.setLevel(log_level)
     root_logger.addHandler(handler)
 
-    logging.getLogger("uvicorn").setLevel(logging.WARNING)
-    logging.getLogger("uvicorn.error").setLevel(logging.ERROR)
-    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+    logging.getLogger("uvicorn").setLevel(logging.INFO)
+    logging.getLogger("uvicorn.error").setLevel(logging.INFO)
+    logging.getLogger("uvicorn.access").setLevel(logging.INFO)
 
     root_logger.info("Logging settingsured successfully.")
