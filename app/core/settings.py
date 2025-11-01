@@ -6,6 +6,8 @@ class Settings(BaseSettings):
     # ===== App Config =====
     APP_NAME: str = "zipformer-asr-api"
     LOG_LEVEL: str = "INFO"
+    PORT: int = 8000
+    WORKERS: int = 1
 
     # ===== Auth Config =====
     API_KEYS: Optional[Json[List[str]]] = []

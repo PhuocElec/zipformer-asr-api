@@ -1,0 +1,13 @@
+services:
+  zipformer-asr-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["gunicorn", "app.main:app",
+              "-k", "uvicorn.workers.UvicornWorker", 
+              "--bind", "0.0.0.0:${PORT}", 
+              "--workers", "${WORKERS}"]
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:${PORT}:${PORT}"
