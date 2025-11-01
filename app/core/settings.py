@@ -1,3 +1,4 @@
+from pydantic import Json
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List, Optional
 
@@ -7,7 +8,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
 
     # ===== Auth Config =====
-    API_KEYS: Optional[str] = None
+    API_KEYS: Optional[Json[List[str]]] = []
 
     # ===== Model Config =====
     USE_CUDA: bool = True
@@ -26,11 +27,5 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore"
     )
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        if isinstance(self.API_KEYS, str):
-            keys = [k.strip() for k in self.API_KEYS.split(",") if k.strip()]
-            self.API_KEYS = keys if keys else None
 
 settings = Settings()
