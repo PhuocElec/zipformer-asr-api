@@ -38,6 +38,7 @@ async def post_transcription(file: UploadFile = File(...)):
 
         start_time = time.monotonic()
         text = zipformer.transcribe(samples, sample_rate)
+        text = zipformer.normalize(text)
         logger.info(f"Transcription completed in {time.monotonic() - start_time:.3f} seconds")
 
         return {"text": text}

@@ -3,6 +3,7 @@ import sherpa_onnx
 import logging
 import numpy as np
 from typing import Optional
+from underthesea import sent_tokenize
 
 from app.core.settings import settings
 from app.models.downloader import download_hf_model
@@ -71,6 +72,14 @@ class Zipformer:
         result_text = stream.result.text
 
         return result_text
+    
+    def normalize(self, text: str) -> str:
+        sentences = sent_tokenize(text)
+        normalized = []
+        for s in sentences:
+            s = s.strip().capitalize()
+            normalized.append(s)
+        return " ".join(normalized)
 
 zipformer = Zipformer(
     repo_id=settings.ZIPFORMER_REPO_ID,
