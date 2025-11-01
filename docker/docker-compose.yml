@@ -8,6 +8,6 @@ services:
               "--bind", "0.0.0.0:${PORT}", 
               "--workers", "${WORKERS}"]
     env_file:
-      - .env
+      - ../.env
     ports:
       - "127.0.0.1:${PORT}:${PORT}"
