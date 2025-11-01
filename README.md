@@ -82,6 +82,17 @@ Once running:
 - Health check: `GET http://127.0.0.1:8000/health`
 - OpenAPI/Swagger UI: `http://127.0.0.1:8000/docs`
 
+## Run with Docker
+
+Run the API using Docker Compose:
+
+```
+cd zipformer-asr-api
+docker compose -f docker/docker-compose.yml up -d
+```
+
+The service exposes port `8000` by default. Visit `http://127.0.0.1:8000/docs`.
+
 ## Usage example
 
 Transcribe a short WAV/MP3 file via `curl`:
