@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     HF_TOKEN: Optional[str] = None
 
     ZIPFORMER_REPO_ID: str = "zipformer/zipformer-asr-base"
-    ZIPFORMER_REVISION: Optional[str] = None
+    ZIPFORMER_REVISION: Optional[str] = "main"
     ZIPFORMER_ENCODER: str = "encoder.onnx"
     ZIPFORMER_DECODER: str = "decoder.onnx"
     ZIPFORMER_JOINER: str = "joiner.onnx"
