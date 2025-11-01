@@ -16,12 +16,12 @@ class Settings(BaseSettings):
     USE_CUDA: bool = True
     HF_TOKEN: Optional[str] = None
 
-    ZIPFORMER_REPO_ID: str = "zipformer/zipformer-asr-base"
+    ZIPFORMER_REPO_ID: str = "hynt/Zipformer-30M-RNNT-6000h"
     ZIPFORMER_REVISION: Optional[str] = "main"
-    ZIPFORMER_ENCODER: str = "encoder.onnx"
-    ZIPFORMER_DECODER: str = "decoder.onnx"
-    ZIPFORMER_JOINER: str = "joiner.onnx"
-    ZIPFORMER_TOKENS: str = "tokens.txt"
+    ZIPFORMER_ENCODER: str = "encoder-epoch-20-avg-10.onnx"
+    ZIPFORMER_DECODER: str = "decoder-epoch-20-avg-10.onnx"
+    ZIPFORMER_JOINER: str = "joiner-epoch-20-avg-10.onnx"
+    ZIPFORMER_TOKENS: str = "config.json"
     ZIPFORMER_NUM_THREADS: int = 2
 
     model_config = SettingsConfigDict(
