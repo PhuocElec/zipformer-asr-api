@@ -1,4 +1,4 @@
-from pydantic import Json
+from pydantic import Json, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List, Optional
 
@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     WORKERS: int = 1
 
     # ===== Auth Config =====
-    API_KEYS: Optional[Json[List[str]]] = []
+    API_KEYS: Optional[Json[List[str]]] = Field(default="[]")
 
     # ===== Model Config =====
     USE_CUDA: bool = True
