@@ -8,3 +8,4 @@ python-multipart
 huggingface-hub==1.0.1
 scipy==1.11.4
 underthesea==8.3.0
+pydantic-settings==2.11.0
