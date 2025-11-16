@@ -88,6 +88,7 @@ Run the API using Docker Compose:
 
 ```
 cd zipformer-asr-api
+cp .env docker/.env
 docker compose -f docker/docker-compose.yml up -d
 ```
 
