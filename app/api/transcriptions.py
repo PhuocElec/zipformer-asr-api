@@ -2,10 +2,10 @@ import io
 import time
 import logging
 import subprocess
+import asyncio
 import numpy as np
 import soundfile as sf
 from fastapi import APIRouter, File, UploadFile, HTTPException, Header, Depends
-from fastapi.concurrency import run_in_threadpool
 
 from app.core.settings import settings
 from app.models.zipformer import zipformer
@@ -32,7 +32,7 @@ async def post_transcription(file: UploadFile = File(...)):
     try:
         data = await file.read()
 
-        samples, sample_rate = await run_in_threadpool(
+        samples, sample_rate = await asyncio.to_thread(
             _decode_audio_in_memory,
             data,
             (file.filename or "").lower(),
@@ -41,9 +41,9 @@ async def post_transcription(file: UploadFile = File(...)):
 
         start_time = time.monotonic()
 
-        text = await run_in_threadpool(zipformer.transcribe, samples, sample_rate)
+        text = await asyncio.to_thread(zipformer.transcribe, samples, sample_rate)
 
-        text = await run_in_threadpool(zipformer.normalize, text)
+        text = await asyncio.to_thread(zipformer.normalize, text)
 
         logger.info(
             "Transcription completed in %.3f seconds",
