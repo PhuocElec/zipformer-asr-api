@@ -5,6 +5,7 @@ import subprocess
 import numpy as np
 import soundfile as sf
 from fastapi import APIRouter, File, UploadFile, HTTPException, Header, Depends
+from fastapi.concurrency import run_in_threadpool
 
 from app.core.settings import settings
 from app.models.zipformer import zipformer
@@ -30,16 +31,24 @@ async def validate_api_key(api_key: str = Header(None, alias="API-Key")):
 async def post_transcription(file: UploadFile = File(...)):
     try:
         data = await file.read()
-        samples, sample_rate = _decode_audio_in_memory(
-            data=data,
-            filename=(file.filename or "").lower(),
-            content_type=(file.content_type or "").lower(),
+
+        samples, sample_rate = await run_in_threadpool(
+            _decode_audio_in_memory,
+            data,
+            (file.filename or "").lower(),
+            (file.content_type or "").lower(),
         )
 
         start_time = time.monotonic()
-        text = zipformer.transcribe(samples, sample_rate)
-        text = zipformer.normalize(text)
-        logger.info(f"Transcription completed in {time.monotonic() - start_time:.3f} seconds")
+
+        text = await run_in_threadpool(zipformer.transcribe, samples, sample_rate)
+
+        text = await run_in_threadpool(zipformer.normalize, text)
+
+        logger.info(
+            "Transcription completed in %.3f seconds",
+            time.monotonic() - start_time,
+        )
 
         return {"text": text}
 
