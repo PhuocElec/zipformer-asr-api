@@ -16,12 +16,12 @@ class Settings(BaseSettings):
     USE_CUDA: bool = True
     HF_TOKEN: Optional[str] = None
 
-    ZIPFORMER_REPO_ID: str = "hynt/Zipformer-30M-RNNT-6000h"
+    ZIPFORMER_REPO_ID: str = "zzasdf/viet_iter3_pseudo_label"
     ZIPFORMER_REVISION: Optional[str] = "main"
-    ZIPFORMER_ENCODER: str = "encoder-epoch-20-avg-10.onnx"
-    ZIPFORMER_DECODER: str = "decoder-epoch-20-avg-10.onnx"
-    ZIPFORMER_JOINER: str = "joiner-epoch-20-avg-10.onnx"
-    ZIPFORMER_TOKENS: str = "config.json"
+    ZIPFORMER_ENCODER: str = "exp/encoder-epoch-12-avg-8.onnx"
+    ZIPFORMER_DECODER: str = "exp/decoder-epoch-12-avg-8.onnx"
+    ZIPFORMER_JOINER: str = "exp/joiner-epoch-12-avg-8.onnx"
+    ZIPFORMER_TOKENS: str = "data/Vietnam_bpe_2000_new/tokens.txt"
     ZIPFORMER_NUM_THREADS: int = 2
 
     model_config = SettingsConfigDict(
