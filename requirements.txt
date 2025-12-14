@@ -1,6 +1,5 @@
---find-links https://k2-fsa.github.io/sherpa/onnx/cuda.html
-onnxruntime-gpu==1.23.2
-sherpa-onnx==1.12.13+cuda12.cudnn9
+onnxruntime-gpu==1.17.1
+sherpa-onnx==1.10.46
 fastapi==0.120.3
 uvicorn[standard]
 gunicorn
