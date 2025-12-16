@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.4.1-cudnn9-runtime-ubuntu22.04
+FROM nvidia/cuda:12.3.2-cudnn9-runtime-ubuntu22.04
 
 RUN apt-get update && apt-get install -y \
     python3.10 \
