@@ -42,7 +42,6 @@ async def post_transcription(file: UploadFile = File(...)):
         start_time = time.monotonic()
 
         text = await asyncio.to_thread(zipformer.transcribe, samples, sample_rate)
-
         text = await asyncio.to_thread(zipformer.normalize, text)
 
         logger.info(
@@ -72,37 +71,64 @@ def _decode_audio_in_memory(
     if len(data) > max_bytes:
         raise HTTPException(status_code=413, detail="Uploaded file is too large")
 
-    is_wav = ("audio/wav" in content_type) or ("audio/x-wav" in content_type) or filename.endswith(".wav")
-    is_mp3 = ("audio/mpeg" in content_type) or ("audio/mp3" in content_type) or filename.endswith(".mp3")
+    filename = filename.lower()
+    content_type = content_type.lower()
+
+    is_wav = (
+        "audio/wav" in content_type
+        or "audio/x-wav" in content_type
+        or filename.endswith(".wav")
+    )
+
+    is_compressed = (
+        # mp3
+        "audio/mpeg" in content_type
+        or "audio/mp3" in content_type
+        or filename.endswith(".mp3")
+        # opus / ogg / webm
+        or "audio/ogg" in content_type
+        or "audio/opus" in content_type
+        or "audio/webm" in content_type
+        or filename.endswith((".opus", ".ogg", ".webm"))
+    )
 
     if is_wav:
         return _decode_wav_from_bytes(data)
-    if is_mp3:
-        return _decode_mp3_with_ffmpeg(data)
 
-    try:
-        return _decode_wav_from_bytes(data)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Only .wav or .mp3 files are supported")
+    if is_compressed:
+        return _decode_with_ffmpeg(data)
+
+    raise HTTPException(
+        status_code=400,
+        detail="Only wav, mp3, opus, ogg, webm audio files are supported",
+    )
+
 
 def _decode_wav_from_bytes(buf: bytes) -> tuple[np.ndarray, int]:
     with sf.SoundFile(io.BytesIO(buf)) as f:
         samples = f.read(dtype="float32")
         sr = f.samplerate
+    
     if samples.ndim > 1:
         samples = samples.mean(axis=1)
+        
     return samples, sr
 
-def _decode_mp3_with_ffmpeg(buf: bytes) -> tuple[np.ndarray, int]:
+
+def _decode_with_ffmpeg(buf: bytes) -> tuple[np.ndarray, int]:
+    """
+    Decode any compressed audio (mp3, opus, ogg, webm)
+    → mono, 16kHz, float32
+    """
     try:
         result = subprocess.run(
             [
                 "ffmpeg",
                 "-v", "error",
                 "-i", "pipe:0",
-                "-f", "f32le",
-                "-ac", "1",
-                "-ar", "16000",
+                "-ac", "1",          # mono
+                "-ar", "16000",      # resample
+                "-f", "f32le",       # float32 raw
                 "pipe:1",
             ],
             input=buf,
@@ -113,9 +139,14 @@ def _decode_mp3_with_ffmpeg(buf: bytes) -> tuple[np.ndarray, int]:
     except FileNotFoundError:
         raise HTTPException(status_code=500, detail="ffmpeg not found on server")
     except subprocess.CalledProcessError as e:
-        raise HTTPException(status_code=400, detail=f"ffmpeg decode failed: {e.stderr.decode()}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"ffmpeg decode failed: {e.stderr.decode(errors='ignore')}",
+        )
 
     samples = np.frombuffer(result.stdout, dtype=np.float32)
-    sample_rate = 16000
 
-    return samples, sample_rate
+    if samples.size == 0:
+        raise HTTPException(status_code=400, detail="Decoded audio is empty")
+
+    return samples, 16000
