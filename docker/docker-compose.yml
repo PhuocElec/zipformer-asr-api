@@ -12,3 +12,4 @@ services:
     ports:
       - "127.0.0.1:${PORT}:${PORT}"
     gpus: all
+    restart: unless-stopped
