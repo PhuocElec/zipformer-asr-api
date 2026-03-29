@@ -11,5 +11,7 @@ services:
       - .env
     ports:
       - "127.0.0.1:${PORT}:${PORT}"
+    volumes:
+      - ..:/app
     gpus: all
     restart: unless-stopped
