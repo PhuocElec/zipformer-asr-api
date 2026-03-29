@@ -30,6 +30,7 @@ async def validate_api_key(api_key: str = Header(None, alias="API-Key")):
 @router.post("/transcriptions", dependencies=[Depends(validate_api_key)])
 async def post_transcription(file: UploadFile = File(...)):
     try:
+        request_started_at = time.monotonic()
         data = await file.read()
 
         samples, sample_rate = await asyncio.to_thread(
@@ -39,14 +40,22 @@ async def post_transcription(file: UploadFile = File(...)):
             (file.content_type or "").lower(),
         )
 
-        start_time = time.monotonic()
+        transcribe_started_at = time.monotonic()
 
         text = await asyncio.to_thread(zipformer.transcribe, samples, sample_rate)
+        transcribe_elapsed = time.monotonic() - transcribe_started_at
+
+        normalize_started_at = time.monotonic()
         text = await asyncio.to_thread(zipformer.normalize, text)
+        normalize_elapsed = time.monotonic() - normalize_started_at
+
+        total_elapsed = time.monotonic() - request_started_at
 
         logger.info(
-            "Transcription completed in %.3f seconds",
-            time.monotonic() - start_time,
+            "Transcription completed in %.3f seconds (transcribe=%.3f normalize=%.3f)",
+            total_elapsed,
+            transcribe_elapsed,
+            normalize_elapsed,
         )
 
         return {"text": text}

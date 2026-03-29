@@ -34,7 +34,15 @@ class Zipformer:
     ):
         if self._initialized:
             return
-        
+
+        logger.info(
+            "Initializing Zipformer recognizer: repo_id=%s revision=%s provider=%s threads=%s",
+            repo_id,
+            revision,
+            device,
+            num_threads,
+        )
+
         model_dir = download_hf_model(
             repo_id,
             revision=revision,
@@ -61,6 +69,7 @@ class Zipformer:
 
         self.desired_sr = desired_sr
         self._initialized = True
+        logger.info("Zipformer recognizer initialized successfully")
 
     def transcribe(self, samples: np.ndarray, sample_rate: int) -> str:
         if sample_rate != self.desired_sr:
@@ -80,6 +89,20 @@ class Zipformer:
             s = s.strip().capitalize()
             normalized.append(s)
         return " ".join(normalized)
+
+    def warmup(self, duration_sec: float = 0.5) -> None:
+        warmup_samples = np.zeros(
+            int(self.desired_sr * duration_sec),
+            dtype=np.float32,
+        )
+
+        logger.info(
+            "Running Zipformer warm-up inference with %.3f seconds of silence",
+            duration_sec,
+        )
+        self.transcribe(warmup_samples, self.desired_sr)
+        self.normalize("")
+        logger.info("Zipformer warm-up completed")
 
 zipformer = Zipformer(
     repo_id=settings.ZIPFORMER_REPO_ID,
