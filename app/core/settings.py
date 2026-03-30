@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     PORT: int = 8000
     WORKERS: int = 1
+    DOCKER_NETWORK_NAME: str = "voicebot-network"
 
     # ===== Auth Config =====
     API_KEYS: Optional[Json[List[str]]] = Field(default="[]")
