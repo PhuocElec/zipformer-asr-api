@@ -28,7 +28,9 @@ class Zipformer:
         decoder: str,
         joiner: str,
         tokens: str,
+        decoding_method: str = "greedy_search",
         desired_sr: int = 16000,
+        feature_dim: int = 80,
         num_threads: int = 2,
         device: str = "cuda",
     ):
@@ -36,11 +38,14 @@ class Zipformer:
             return
 
         logger.info(
-            "Initializing Zipformer recognizer: repo_id=%s revision=%s provider=%s threads=%s",
+            "Initializing Zipformer recognizer: repo_id=%s revision=%s provider=%s threads=%s decoding=%s sample_rate=%s feature_dim=%s",
             repo_id,
             revision,
             device,
             num_threads,
+            decoding_method,
+            desired_sr,
+            feature_dim,
         )
 
         model_dir = download_hf_model(
@@ -60,9 +65,9 @@ class Zipformer:
             joiner=joiner_path,
             tokens=tokens_path,
             num_threads=num_threads,
-            decoding_method="greedy_search",
+            decoding_method=decoding_method,
             sample_rate=desired_sr,
-            feature_dim=80,
+            feature_dim=feature_dim,
             debug=False,
             provider=device,
         )
@@ -111,6 +116,9 @@ zipformer = Zipformer(
     decoder=settings.ZIPFORMER_DECODER,
     joiner=settings.ZIPFORMER_JOINER,
     tokens=settings.ZIPFORMER_TOKENS,
+    decoding_method=settings.ZIPFORMER_DECODING_METHOD,
+    desired_sr=settings.ZIPFORMER_SAMPLE_RATE,
+    feature_dim=settings.ZIPFORMER_FEATURE_DIM,
     num_threads=settings.ZIPFORMER_NUM_THREADS,
     device="cuda" if settings.USE_CUDA else "cpu",
 )

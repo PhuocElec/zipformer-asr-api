@@ -1,6 +1,6 @@
 from pydantic import Json, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import List, Optional
+from typing import List, Literal, Optional
 
 class Settings(BaseSettings):
     # ===== App Config =====
@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     ZIPFORMER_JOINER: str = "exp/joiner-epoch-12-avg-8.onnx"
     ZIPFORMER_TOKENS: str = "data/Vietnam_bpe_2000_new/tokens.txt"
     ZIPFORMER_NUM_THREADS: int = 2
+    ZIPFORMER_DECODING_METHOD: Literal["greedy_search", "modified_beam_search"] = "greedy_search"
+    ZIPFORMER_SAMPLE_RATE: int = 16000
+    ZIPFORMER_FEATURE_DIM: int = 80
 
     model_config = SettingsConfigDict(
         env_file=".env",

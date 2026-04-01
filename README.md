@@ -59,7 +59,10 @@ cp .env.example .env
 - `USE_CUDA`: `true` to use GPU, `false` for CPU.
 - `HF_TOKEN`: Hugging Face token if the model requires authentication.
 - `ZIPFORMER_REPO_ID`: HF repo id to download model weights.
-- `ZIPFORMER_*`: Filenames and threads for the ONNX model components.
+- `ZIPFORMER_*`: Filenames, thread count, decoding method, sample rate, and feature dimension for the ONNX model components.
+- `ZIPFORMER_DECODING_METHOD`: `greedy_search` or `modified_beam_search`.
+- `ZIPFORMER_SAMPLE_RATE`: Input sample rate expected by the model, e.g. `16000`.
+- `ZIPFORMER_FEATURE_DIM`: Feature dimension expected by the model, e.g. `80`.
 
 The app loads configuration from `.env` automatically.
 
